@@ -10,11 +10,6 @@ body {
   text-decoration: none;
   user-select: none;
   list-style-type: none;
-  margin: 0px !important;
-  padding: 0px !important;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  margin: 0px;
+  padding: 0px;
 }
