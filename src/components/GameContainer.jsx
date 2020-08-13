@@ -21,6 +21,9 @@ class GameContainer extends React.Component{
     }
 
     checkGame = (x, y) => {
+        if(this.sData.mainCounter < this.sData.wll * 2 - 1)
+            return
+        
         const directions = [
             [[0, -1],[0, 1]],
             [[-1, 0],[1, 0]],
@@ -62,7 +65,12 @@ class GameContainer extends React.Component{
         });
 
         if(linesList.length > 0)
-            return {linesList, current}
+            return {linesList, response:`${current} wins`}
+        
+
+        if(this.sData.mainCounter >= (this.sData.size.w - 2) * (this.sData.size.h - 2))
+            return {linesList, response:"Draw"}
+        
         return null    
     }
 
@@ -89,18 +97,15 @@ class GameContainer extends React.Component{
     }
 
     setWinningItems = (data) => {
-        let { current, linesList } = data
-    
+        let { linesList } = data
+        
         linesList.forEach(i => {
             i.forEach(j => {
                 let y = j[0] - 1
                 let x = j[1] - 1
-                let index = this.sData.size.w * y + x
-                let list = this.state.winningItemsList
-                list[index] = true
-                this.setState({
-                    winningItemsList: list
-                })
+                let index = (this.sData.size.w - 2) * (y) + (x)
+                this.sData.winningItemsList[index] = true
+                console.log(this.sData.size.w, y, x, index)
             }); 
         });
     }
@@ -129,7 +134,7 @@ class GameContainer extends React.Component{
             
             if(this.checked != null){
                 this.setWinningItems(this.checked)
-                this.actions.GameEnd(this.checked.current)
+                this.actions.GameEnd(this.checked.response)
             }
             this.actions.setNewItem()
         }
@@ -159,8 +164,11 @@ class GameContainer extends React.Component{
 
     getItemClassList = (data) => {
         const { j, i, w, h, cnt } = data
-        let classList = [s.item] 
+
+        let classList = [s.item]
         
+        if(this.sData.isGameEnded.status && this.sData.winningItemsList[cnt])
+            classList.push(s.winning)
         if(j === 1)
             classList.push(s.left)
         if(j === w - 2)
@@ -169,9 +177,6 @@ class GameContainer extends React.Component{
             classList.push(s.top)
         if(i === h - 2)
             classList.push(s.bottom)
-        if(this.sData.isGameEnded.status && this.state.winningItemsList && this.state.winningItemsList[cnt]){
-            classList.push(s.winning)
-        }
         
         return classList
     }
@@ -203,13 +208,12 @@ class GameContainer extends React.Component{
     }
     
     endGameContainer = () => {
-        console.log(this.sData.isGameEnded.status)
         if(this.sData.isGameEnded.status){
             
             return (
                 <div className={s.endGameWindow}>
                     <div className={s.textContainer}> 
-                        <p>{this.sData.isGameEnded.winner} wins</p>
+                        <p>{this.sData.isGameEnded.gameEndResponse}</p>
                     </div>
                 </div>
             )
