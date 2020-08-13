@@ -4,9 +4,9 @@ import { GameSettings } from './components/GameSettings';
 import './App.css';
 
 function App(props) {
-
+  
   const GameFunc = () =>{
-    if(props.state.GameContainer.GameStatus)
+    //if(props.state.GameSettings.buttonValue !== 'play')
       return <GameContainer state={props.state.GameContainer} actions={props.actions.GameContainer}/>
     return null
   }
@@ -17,6 +17,7 @@ function App(props) {
         <div>
           <GameSettings state={props.state.GameSettings} actions={props.actions.GameSettings}/>
         </div>
+        
           {<GameFunc/>}
       </div>
     </div>

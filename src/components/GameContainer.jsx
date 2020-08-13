@@ -6,7 +6,8 @@ class GameContainer extends React.Component{
         super(props)
         this.actions = props.actions
         this.sData = props.state
-        
+        this.GameContainerRef = React.createRef()
+        this.checked = null
         if(!this.sData.GameMap){
             this.sData.GameMap = this.getGameMap()
             this.mainCounter = this.sData.mainCounter
@@ -60,7 +61,9 @@ class GameContainer extends React.Component{
                 linesList.push(list)
         });
 
-        return {linesList, current}
+        if(linesList.length > 0)
+            return {linesList, current}
+        return null    
     }
 
     updateData = (e) => {
@@ -73,6 +76,7 @@ class GameContainer extends React.Component{
 
     componentDidMount() {
         this.setState({
+            winningItemsList: [],
             itemsGridData: this.getItemsGridData(this.sData.size, this.state.width),
         });
         window.addEventListener('resize', this.updateData);
@@ -89,7 +93,14 @@ class GameContainer extends React.Component{
     
         linesList.forEach(i => {
             i.forEach(j => {
-                console.log(j)
+                let y = j[0] - 1
+                let x = j[1] - 1
+                let index = this.sData.size.w * y + x
+                let list = this.state.winningItemsList
+                list[index] = true
+                this.setState({
+                    winningItemsList: list
+                })
             }); 
         });
     }
@@ -111,9 +122,12 @@ class GameContainer extends React.Component{
                 GameMap[y][x] = 'o'
             
             this.sData.GameMap = GameMap
-            let checked = this.checkGame(x, y)
-            this.setWinningItems(checked)
-
+            this.checked = this.checkGame(x, y)
+            
+            if(this.checked != null){
+                this.setWinningItems(this.checked)
+                //this.actions.GameEnd()
+            }
             this.actions.setNewItem()
         }
     }
@@ -141,7 +155,7 @@ class GameContainer extends React.Component{
     }
 
     getItemClassList = (data) => {
-        const { j, i, w, h } = data
+        const { j, i, w, h, cnt } = data
         let classList = [s.item] 
         
         if(j === 1)
@@ -152,11 +166,16 @@ class GameContainer extends React.Component{
             classList.push(s.top)
         if(i === h - 2)
             classList.push(s.bottom)
+        if(this.state.winningItemsList && this.state.winningItemsList[cnt]){
+            classList.push(s.winning)
+        }
         
         return classList
     }
 
     getItemContent = (i, j) => {
+        if(!this.sData.GameStatus)
+            return
         if(this.sData.GameMap[i][j] === 'x' || this.sData.GameMap[i][j] === 'o')
             return <p>{this.sData.GameMap[i][j]}</p>
     }   
@@ -173,7 +192,7 @@ class GameContainer extends React.Component{
         
         for(let i = 1; i < h - 1; i++){
             for(let j = 1; j < w - 1; j++){
-                items.push(<div item-type={'item'} item-index={cnt} key={`item${cnt}`} className={getItemClassList({ j, i, w, h }).join(' ')} style={itemStyle}>
+                items.push(<div item-type={'item'} item-index={cnt} key={`item${cnt}`} className={getItemClassList({ j, i, w, h, cnt }).join(' ')} style={itemStyle}>
                     {this.getItemContent(i, j)}
                 </div>)
                 cnt += 1
@@ -182,13 +201,28 @@ class GameContainer extends React.Component{
         return items
     }
     
+    endGameContainer = () => {
+        console.log(1)
+        if(this.checked != null){
+            console.log(2)
+            return (
+                <div className={s.endGameWindow}>
+                    <div className={s.textContainer}> 
+                        <p>{this.checked.current} wins</p>
+                    </div>
+                </div>
+            )
+        }
+    }
+
     render (){
         return(
             <div ref = { this.GameContainerRef } className = { s.GameContainer } style={{gridTemplateColumns: `repeat(${this.state.itemsGridData.itemsInRow}, ${this.state.itemsGridData.itemSize}px)`}}>
         
                 { this.getItems(this.sData.size) }
-                
+                { this.endGameContainer() } 
             </div>
+            
         )
     };
 }

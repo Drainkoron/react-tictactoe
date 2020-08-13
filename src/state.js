@@ -27,7 +27,13 @@ let actions = {
             state.GameContainer.mainCounter += 1
             state.GameContainer.currentPlayer = !state.GameContainer.currentPlayer
             rerenderEntireTree({state, actions})
-        }
+        },
+
+        GameEnd(){
+            console.log("Game ended")
+            state.GameContainer.GameStatus = false
+            rerenderEntireTree({state, actions})
+        },
     },
     GameSettings:{
         inputChange(e){
