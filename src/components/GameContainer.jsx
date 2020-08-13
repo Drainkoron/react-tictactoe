@@ -105,7 +105,6 @@ class GameContainer extends React.Component{
                 let x = j[1] - 1
                 let index = (this.sData.size.w - 2) * (y) + (x)
                 this.sData.winningItemsList[index] = true
-                console.log(this.sData.size.w, y, x, index)
             }); 
         });
     }
