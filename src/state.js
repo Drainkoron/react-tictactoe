@@ -6,6 +6,10 @@ let state = {
         currentPlayer: true,
         GameMap:null,
         GameStatus:false,
+        isGameEnded:{
+            status:null,
+            winner:null
+        },
         wll:3,
         size:{
             w:5, 
@@ -29,9 +33,11 @@ let actions = {
             rerenderEntireTree({state, actions})
         },
 
-        GameEnd(){
+        GameEnd(current){
             console.log("Game ended")
             state.GameContainer.GameStatus = false
+            state.GameContainer.isGameEnded.status = true
+            state.GameContainer.isGameEnded.winner = current
             rerenderEntireTree({state, actions})
         },
     },
@@ -67,6 +73,7 @@ let actions = {
             state.GameContainer.wll = state.GameSettings.wll
             state.GameContainer.currentPlayer = true
             state.GameContainer.GameMap = null
+            state.GameContainer.isGameEnded.status = false
 
             state.GameSettings.buttonValue = 'replay'
             state.GameContainer.GameStatus = true

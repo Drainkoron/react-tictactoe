@@ -106,6 +106,9 @@ class GameContainer extends React.Component{
     }
 
     clickEvent = (e) => {
+        if(this.sData.isGameEnded.status || this.sData.isGameEnded.status === null)
+            return 
+
         let $item = e.target
         let { GameMap } = this.sData
 
@@ -126,7 +129,7 @@ class GameContainer extends React.Component{
             
             if(this.checked != null){
                 this.setWinningItems(this.checked)
-                //this.actions.GameEnd()
+                this.actions.GameEnd(this.checked.current)
             }
             this.actions.setNewItem()
         }
@@ -166,7 +169,7 @@ class GameContainer extends React.Component{
             classList.push(s.top)
         if(i === h - 2)
             classList.push(s.bottom)
-        if(this.state.winningItemsList && this.state.winningItemsList[cnt]){
+        if(this.sData.isGameEnded.status && this.state.winningItemsList && this.state.winningItemsList[cnt]){
             classList.push(s.winning)
         }
         
@@ -174,8 +177,6 @@ class GameContainer extends React.Component{
     }
 
     getItemContent = (i, j) => {
-        if(!this.sData.GameStatus)
-            return
         if(this.sData.GameMap[i][j] === 'x' || this.sData.GameMap[i][j] === 'o')
             return <p>{this.sData.GameMap[i][j]}</p>
     }   
@@ -202,13 +203,13 @@ class GameContainer extends React.Component{
     }
     
     endGameContainer = () => {
-        console.log(1)
-        if(this.checked != null){
-            console.log(2)
+        console.log(this.sData.isGameEnded.status)
+        if(this.sData.isGameEnded.status){
+            
             return (
                 <div className={s.endGameWindow}>
                     <div className={s.textContainer}> 
-                        <p>{this.checked.current} wins</p>
+                        <p>{this.sData.isGameEnded.winner} wins</p>
                     </div>
                 </div>
             )
@@ -217,12 +218,12 @@ class GameContainer extends React.Component{
 
     render (){
         return(
-            <div ref = { this.GameContainerRef } className = { s.GameContainer } style={{gridTemplateColumns: `repeat(${this.state.itemsGridData.itemsInRow}, ${this.state.itemsGridData.itemSize}px)`}}>
-        
-                { this.getItems(this.sData.size) }
+            <div> 
+                <div ref = { this.GameContainerRef } className = { s.GameContainer } style={{gridTemplateColumns: `repeat(${this.state.itemsGridData.itemsInRow}, ${this.state.itemsGridData.itemSize}px)`}}>
+                    { this.getItems(this.sData.size) }
+                </div>
                 { this.endGameContainer() } 
             </div>
-            
         )
     };
 }
